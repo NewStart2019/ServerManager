@@ -3,6 +3,7 @@ stages:
   - npm_yarn
   - docker
   - nginx
+  - git
 
 variables:
   TARGET_SERVER: 172.16.0.14
@@ -47,3 +48,11 @@ nginx_install:
   when: manual
   script:
     - sshpass -p $PASSWORD ssh $USER@$TARGET_SERVER 'sudo bash -s' < nginx_install.sh
+
+git_install:
+  tags:
+    - default
+  stage: git
+  when: manual
+  script:
+    - sshpass -p $PASSWORD ssh $USER@$TARGET_SERVER 'sudo bash -s' < git_install.sh
