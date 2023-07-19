@@ -7,11 +7,11 @@ if [ "$?" -ne 127 ]; then
   exit 0
 fi
 
+sudo yum install epel-release
+sudo yum update
 sudo yum install -y nginx
 sudo nginx
 sudo systemctl status nginx
-
-#!/bin/bash
 
 # 检查防火墙状态
 firewall_status=$(systemctl is-active firewalld)
