@@ -8,7 +8,7 @@ if [ "$?" -ne 127 ]; then
 fi
 
 sudo yum install -y epel-release
-sudo yum update
+sudo yum update -y
 sudo yum install -y nginx
 sudo nginx
 sudo systemctl status nginx
