@@ -7,7 +7,7 @@ if [ "$?" -ne 127 ]; then
   exit 0
 fi
 
-sudo yum install epel-release
+sudo yum install -y epel-release
 sudo yum update
 sudo yum install -y nginx
 sudo nginx
