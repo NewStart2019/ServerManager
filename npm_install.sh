@@ -7,6 +7,9 @@ if [ "$?" -ne 127 ]; then
   exit 0
 fi
 
+curl -fsSL https://rpm.nodesource.com/setup_14.x | sudo bash -
+sudo yum install -y nodejs
+
 # 下载安装脚本
 curl -L https://npmjs.org/install.sh | sudo sh
 # 查看版本
