@@ -24,7 +24,7 @@ fi
 # jdk17 或者 20 需要手动下载安装
 if [ "$JAVE_VERSION" = 17 ] || [ "$JAVE_VERSION" = 20 ]; then
   JAVA_URL=https://download.oracle.com/java/${JAVE_VERSION}/latest/jdk-${JAVE_VERSION}_linux-x64_bin.tar.gz
-  # wget $JAVA_URL
+  wget $JAVA_URL
   chmod +x jdk-${JAVE_VERSION}_linux-x64_bin.tar.gz
   mkdir ./jdk
   # 解压缩
