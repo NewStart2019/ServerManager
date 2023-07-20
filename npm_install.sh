@@ -1,11 +1,19 @@
 #!/bin/sh
 
+###################################
+## 本脚本已经废弃，暂时保留
+###################################
+
 start_time=$(date +%s) # 获取当前时间戳（秒）
 npm --version
 if [ "$?" -ne 127 ]; then
   echo "已经安装过npm"
   exit 0
 fi
+
+wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+source ~/.bashrc
+nvm ls-remote
 
 curl -fsSL https://rpm.nodesource.com/setup_14.x | sudo bash -
 sudo yum install -y nodejs
