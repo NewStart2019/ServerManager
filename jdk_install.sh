@@ -23,24 +23,12 @@ fi
 
 # jdk17 或者 20 需要手动下载安装
 if [ "$JAVE_VERSION" = 17 ] || [ "$JAVE_VERSION" = 20 ]; then
-  JAVA_URL=https://download.oracle.com/java/${JAVE_VERSION}/latest/jdk-${JAVE_VERSION}_linux-x64_bin.tar.gz
+  JAVA_URL=https://download.oracle.com/java/${JAVE_VERSION}/latest/jdk-${JAVE_VERSION}_linux-x64_bin.rpm
   wget $JAVA_URL
-  chmod +x jdk-${JAVE_VERSION}_linux-x64_bin.tar.gz
-  mkdir ./jdk
-  # 解压缩
-  tar -xf jdk-${JAVE_VERSION}_linux-x64_bin.tar.gz -C ./jdk
-  cd jdk
-  dir_name=$(ls)
-  sudo mv "$dir_name" /usr/local/
-  # 配置环境变量
-  echo "JAVA_HOME=/usr/local/$dir_name" >>/etc/profile
-  echo "export PATH=\$JAVA_HOME/bin:\$PATH" >>/etc/profile
-  # shellcheck disable=SC2039
-  source /etc/profile
+  chmod +x jdk-${JAVE_VERSION}_linux-x64_bin.rpm
+  rpm -ivh jdk-${JAVE_VERSION}_linux-x64_bin.rpm
 
-  cd ..
-  rm -rf jdk-${JAVE_VERSION}_linux-x64_bin.tar.gz
-  rm -rf jdk
+  rm -rf jdk-${JAVE_VERSION}_linux-x64_bin.rpm
   java -version
   end_time=$(date +%s)                # 获取当前时间戳（秒）
   duration=$((end_time - start_time)) # 计算脚本执行时间（秒）
