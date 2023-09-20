@@ -5,6 +5,7 @@
 ## 项目说明
 
 用于服务器环境初始化
+可以安装：jdk、nvm（yarn）、nginx、git、docker(docker-compose)
 
 ## 下载
 
