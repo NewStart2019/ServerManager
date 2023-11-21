@@ -390,6 +390,7 @@
 
     # shellcheck disable=SC2016
     COMPLETION_STR='[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion\n'
+    NPM_REGITRY='export NVM_NODEJS_ORG_MIRROR=https://npm.taobao.org/mirrors/node'
     BASH_OR_ZSH=false
 
     if [ -z "${NVM_PROFILE-}" ]; then
@@ -425,6 +426,7 @@
       nvm_echo "=> Please also append the following lines to the if you are using bash/zsh shell:"
       command printf "${COMPLETION_STR}"
     fi
+    command printf "${NPM_REGITRY}"
 
     # Source nvm
     # shellcheck source=/dev/null
