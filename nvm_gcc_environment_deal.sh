@@ -88,17 +88,18 @@ echo -e "\e[31mInstalled glibc-2.28\e[0m"
 # strings查看有没有GLIBCXX_3.4.20
 libstdc_version=$(strings /usr/lib64/libstdc++.so.6 | grep GLIBCXX_3.4.20)
 if [ -z "$libstdc_version" ]; then
+  cd || exit
   sudo wget http://www.vuln.cn/wp-content/uploads/2019/08/libstdc.so_.6.0.26.zip
   unzip libstdc.so_.6.0.26.zip
   cp libstdc++.so.6.0.26 /lib64/
-  cd /lib64
+  cd /lib64 || exit
 
   # 把原来的命令做备份
   cp libstdc++.so.6 libstdc++.so.6.bak
-  rm -f libstdc++.so.6
   # 重新链接
   ln -s libstdc++.so.6.0.26 libstdc++.so.6
   # 移除多余的文件
+  cd || exit
   rm -rf libstdc.so_.6.0.26.zip libstdc++.so.6.0.26
 fi
 echo -e "\e[31mInstalled libstdc.so_.6.0.26!\e[0m"
