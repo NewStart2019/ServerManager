@@ -32,7 +32,7 @@ npm_yarn_install:
   when: manual
   script:
     - sshpass -p $PASSWORD ssh $USER@$TARGET_SERVER 'sudo bash -s' < nvm_install.sh
-    - sshpass -p $PASSWORD ssh $USER@$TARGET_SERVER "if [ -e "${NVM_DIR}" ]; then  source ~/.bashrc; nvm_16=$(nvm ls | grep v16.19.1) if [ -z "${nvm_16}" ]; then nvm install 16.19.1; nvm use 16.19.1; fi"
+    - sshpass -p $PASSWORD ssh $USER@$TARGET_SERVER "if [ -e "${NVM_DIR}" ]; then exit 0;fi; source ~/.bashrc; nvm_16=$(nvm ls | grep v16.19.1); if [ -z "${nvm_16}" ]; then nvm install 16.19.1; nvm use 16.19.1; fi"
     - sshpass -p $PASSWORD ssh $USER@$TARGET_SERVER 'sudo bash -s' < nvm_gcc_environment_deal.sh
 
 docker_install:
