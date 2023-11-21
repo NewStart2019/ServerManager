@@ -26,6 +26,7 @@
     fi
   }
 
+  # 指定你要安装的默认版本
   nvm_latest_version() {
     nvm_echo "v0.38.0"
   }

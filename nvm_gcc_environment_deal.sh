@@ -82,6 +82,7 @@ if [ -z "$glibc_version" ]; then
   cd || exit
   rm -rf glibc-2.28.tar.gz glibc-2.28
 fi
+echo -e "\e[31mInstalled glibc-2.28\e[0m"
 
 # 升级libstdc++
 # strings查看有没有GLIBCXX_3.4.20
@@ -100,3 +101,8 @@ if [ -z "$libstdc_version" ]; then
   # 移除多余的文件
   rm -rf libstdc.so_.6.0.26.zip libstdc++.so.6.0.26
 fi
+echo -e "\e[31mInstalled libstdc.so_.6.0.26!\e[0m"
+
+# 设置语言环境变量
+sudo localedef -i zh_CN -f UTF-8 zh_CN.UTF-8
+sudo mandb
