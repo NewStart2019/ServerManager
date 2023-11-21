@@ -5,7 +5,7 @@
 #node: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.20' not found (required by node)
 # nvm v18开始 最新版本的需要GLIBC_2.27支持，目前系统没有那么高的版本。 libstdc++
 
-if [ -e "${NVM_DIR}" ]; then
+if [ ! -e "${NVM_DIR}" ]; then
   echo -e "\e[31mNVM isn't already installed.\e[0m"
   exit 1
 fi
