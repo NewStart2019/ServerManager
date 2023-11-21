@@ -15,7 +15,7 @@ bison --version
 if [ "$?" -ne 127 ]; then
   echo -e "\e[31m已经安装过bison\e[0m"
 else
-  sudo yum install bison
+  sudo yum -y install bison
 fi
 
 #################### 下载glibc 需要 make4
@@ -23,7 +23,7 @@ make_version=$(make -v | grep -oP '(?<=GNU Make )(\d+\.\d+)')
 # 检查是否为空（即 make 是否安装）
 if [ -z "$make_version" ]; then
   echo -e "\e[31mMake is not installed.Installing make\e[0m"
-  yum install make
+  yum -y install make
   make -v
 else
   echo -e "\e[31mInstalled make version: $make_version\e[0m"
