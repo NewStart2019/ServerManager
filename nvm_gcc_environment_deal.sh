@@ -47,7 +47,6 @@ fi
 
 ####################  检查 gcc 的版本号 是否是8.3
 gcc_version=$(gcc --version | grep -oP '(?<=gcc \(GCC\) )(\d+\.\d+.\d+)')
-
 # 检查是否为空（即 gcc 是否安装）
 if [ -z "$gcc_version" ]; then
   echo -e "\e[31mGCC is not installed.\e[0m"
@@ -81,6 +80,9 @@ if [ -z "$glibc_version" ]; then
   ldd --version
   cd || exit
   rm -rf glibc-2.28.tar.gz glibc-2.28
+  # 设置语言环境变量
+  sudo localedef -i zh_CN -f UTF-8 zh_CN.UTF-8
+  sudo mandb
 fi
 echo -e "\e[31mInstalled glibc-2.28\e[0m"
 
@@ -103,7 +105,3 @@ if [ -z "$libstdc_version" ]; then
   rm -rf libstdc.so_.6.0.26.zip libstdc++.so.6.0.26
 fi
 echo -e "\e[31mInstalled libstdc.so_.6.0.26!\e[0m"
-
-# 设置语言环境变量
-sudo localedef -i zh_CN -f UTF-8 zh_CN.UTF-8
-sudo mandb
