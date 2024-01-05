@@ -10,13 +10,13 @@
 start_time=$(date +%s) # 获取当前时间戳（秒）
 JAVE_VERSION=$1
 
-java -version
-if [ "$?" -ne 127 ]; then
+java=$(command -v objdump)
+if [ -z "$java" ]; then
   echo "已经安装过jdk"
   exit 0
 fi
 
-curl --version >>/dev/null
+curl --version >> /dev/null
 if [ "$?" = 127 ]; then
   yum install -y curl
 fi
@@ -41,6 +41,7 @@ if [ "$JAVE_VERSION" = 17 ] || [ "$JAVE_VERSION" = 20 ]; then
   esac
 
   PACKAGE_NAME="openjdk.rpm"
+  echo $JAVA_URL
   curl -fL -o $PACKAGE_NAME "$JAVA_URL"
   chmod +x $PACKAGE_NAME
   rpm -ivh $PACKAGE_NAME
