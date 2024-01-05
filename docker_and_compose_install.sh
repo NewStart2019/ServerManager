@@ -7,6 +7,19 @@ if [ "$?" -ne 127 ]; then
   exit 0
 fi
 
+file="/etc/docker/daemon.json"
+if [ ! -f "$file" ]; then
+    echo '{
+      "log-driver":"json-file",
+      "log-opts": {"max-size":"500m", "max-file":"3"},
+      "insecure-registries": ["172.16.0.145:8083","172.16.0.145:8929"],
+      "registry-mirrors": ["http://172.16.0.145:8083/","http://172.16.0.145:8929/","https://registry.cn-hangzhou.aliyuncs.com/"]
+    }' | sudo tee "$file" > /dev/null
+    echo "File $file created and content written."
+else
+    echo "File $file already exists."
+fi
+
 sudo yum install -y yum-utils device-mapper-persistent-data lvm2
 sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 sudo yum makecache fast

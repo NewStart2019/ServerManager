@@ -16,19 +16,36 @@ if [ "$?" -ne 127 ]; then
   exit 0
 fi
 
-wget --version >>/dev/null
+curl --version >>/dev/null
 if [ "$?" = 127 ]; then
-  yum install -y wget
+  yum install -y curl
 fi
 
 # jdk17 或者 20 需要手动下载安装
 if [ "$JAVE_VERSION" = 17 ] || [ "$JAVE_VERSION" = 20 ]; then
-  JAVA_URL=https://download.oracle.com/java/${JAVE_VERSION}/latest/jdk-${JAVE_VERSION}_linux-x64_bin.rpm
-  wget $JAVA_URL
-  chmod +x jdk-${JAVE_VERSION}_linux-x64_bin.rpm
-  rpm -ivh jdk-${JAVE_VERSION}_linux-x64_bin.rpm
+  # 获取系统架构,安装指定架构版本的jdk
+  arch="$(objdump="$(command -v objdump)" && objdump --file-headers "$objdump" | awk -F '[:,]+[[:space:]]+' '$1 == "architecture" { print $2 }')"
+  if [ -z "$arch" ]; then
+      arch="$(objdump="$(command -v objdump)" && objdump --file-headers "$objdump" | awk -F '[：，]+' '$1 == "体系结构" { print $2 }')"
+  fi
+  case "$arch" in 'i386:x86-64')
+    JAVA_URL='http://172.16.0.97:84/jdk/Linux/jdk-${JAVE_VERSION}_linux-x64_bin.rpm'
+    ;;
+  'aarch64')
+    JAVA_URL=' http://172.16.0.97:84/jdk/Linux/jdk-${JAVE_VERSION}_linux-aarch64_bin.rpm'
+    ;;
+  *)
+    echo >&2 "error: unsupported architecture: '$arch'"
+    exit 1
+    ;;
+  esac
 
-  rm -rf jdk-${JAVE_VERSION}_linux-x64_bin.rpm
+  PACKAGE_NAME="openjdk.rpm"
+  curl -fL -o $PACKAGE_NAME "$JAVA_URL"
+  chmod +x $PACKAGE_NAME
+  rpm -ivh $PACKAGE_NAME
+
+  rm -rf $PACKAGE_NAME
   java -version
   end_time=$(date +%s)                # 获取当前时间戳（秒）
   duration=$((end_time - start_time)) # 计算脚本执行时间（秒）
