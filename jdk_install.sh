@@ -11,7 +11,7 @@ start_time=$(date +%s) # 获取当前时间戳（秒）
 JAVE_VERSION=$1
 
 java_path=$(command -v java)
-if [ -z "$java_path" ]; then
+if [ ! -z "$java_path" ]; then
   echo "已经安装过jdk"
   exit 0
 fi
