@@ -29,10 +29,10 @@ if [ "$JAVE_VERSION" = 17 ] || [ "$JAVE_VERSION" = 20 ]; then
       arch="$(objdump="$(command -v objdump)" && objdump --file-headers "$objdump" | awk -F '[：，]+' '$1 == "体系结构" { print $2 }')"
   fi
   case "$arch" in 'i386:x86-64')
-    JAVA_URL='http://172.16.0.97:84/jdk/Linux/jdk-${JAVE_VERSION}_linux-x64_bin.rpm'
+    JAVA_URL=http://172.16.0.97:84/jdk/Linux/jdk-${JAVE_VERSION}_linux-x64_bin.rpm
     ;;
   'aarch64')
-    JAVA_URL=' http://172.16.0.97:84/jdk/Linux/jdk-${JAVE_VERSION}_linux-aarch64_bin.rpm'
+    JAVA_URL=http://172.16.0.97:84/jdk/Linux/jdk-${JAVE_VERSION}_linux-aarch64_bin.rpm
     ;;
   *)
     echo >&2 "error: unsupported architecture: '$arch'"
