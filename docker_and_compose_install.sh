@@ -25,8 +25,8 @@ installDockerAndCompose() {
   echo "安装docke-composer成功,脚本执行时间：${duration} 秒"
 }
 
+file="/etc/docker/daemon.json"
 writeConfig() {
-  file="/etc/docker/daemon.json"
   if [ ! -f "$file" ]; then
     echo '{
         "log-driver":"json-file",
@@ -40,6 +40,21 @@ writeConfig() {
   fi
   sudo systemctl start docker
   docker login -u admin -p s9AGdzFaSLXyQrD 172.16.0.145:8083
+}
+
+uninstallDockerAndCompose() {
+  dockerLocation=$(command -v docker)
+  if [ -z "$dockerLocation" ]; then
+    echo "没有安装过docker"
+    exit 0
+  fi
+
+  pip3 uninstall -y docker-compose
+  sudo systemctl stop docker
+  sudo yum remove -y docker-ce docker-ce-cli containerd.io
+  # 这将删除 Docker 的所有容器、镜像和其他数据。请谨慎执行此步骤，因为它
+  sudo rm -rf /var/lib/docker
+  sudo rm -f "$file"
 }
 
 # 安装docker 和 compose
