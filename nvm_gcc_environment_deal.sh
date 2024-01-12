@@ -5,6 +5,51 @@
 #node: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.20' not found (required by node)
 # nvm v18开始 最新版本的需要GLIBC_2.27支持，目前系统没有那么高的版本。 libstdc++
 
+#
+# Detect profile file if not specified as environment variable
+# (eg: PROFILE=~/.myprofile)
+# The echo'ed path is guaranteed to be an existing file
+# Otherwise, an empty string is returned
+#
+nvm_detect_profile() {
+  if [ "${PROFILE-}" = '/dev/null' ]; then
+    # the user has specifically requested NOT to have nvm touch their profile
+    return
+  fi
+
+  if [ -n "${PROFILE}" ] && [ -f "${PROFILE}" ]; then
+    nvm_echo "${PROFILE}"
+    return
+  fi
+
+  local DETECTED_PROFILE
+  DETECTED_PROFILE=''
+
+  if [ -n "${BASH_VERSION-}" ]; then
+    if [ -f "$HOME/.bashrc" ]; then
+      DETECTED_PROFILE="$HOME/.bashrc"
+    elif [ -f "$HOME/.bash_profile" ]; then
+      DETECTED_PROFILE="$HOME/.bash_profile"
+    fi
+  elif [ -n "${ZSH_VERSION-}" ]; then
+    DETECTED_PROFILE="$HOME/.zshrc"
+  fi
+
+  if [ -z "$DETECTED_PROFILE" ]; then
+    for EACH_PROFILE in ".profile" ".bashrc" ".bash_profile" ".zshrc"; do
+      if DETECTED_PROFILE="$(nvm_try_profile "${HOME}/${EACH_PROFILE}")"; then
+        break
+      fi
+    done
+  fi
+
+  if [ -n "$DETECTED_PROFILE" ]; then
+    nvm_echo "$DETECTED_PROFILE"
+  fi
+}
+# 加载用户环境变量
+source nvm_detect_profile
+
 if [ ! -e "${NVM_DIR}" ]; then
   echo -e "\e[31mNVM isn't already installed.\e[0m"
   exit 1
