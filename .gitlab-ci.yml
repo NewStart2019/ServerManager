@@ -1,9 +1,9 @@
 stages:
   - jdk
+  - git
   - npm_yarn
   - docker
   - nginx
-  - git
 
 variables:
   TARGET_SERVER: 172.16.0.14
@@ -24,6 +24,14 @@ jdk_install:
     JAVE_VERSION: 17
   script:
     - sshpass -p $PASSWORD ssh $USER@$TARGET_SERVER 'sudo bash -s' < jdk_install.sh $JAVE_VERSION
+
+git_install:
+  tags:
+    - default
+  stage: git
+  when: manual
+  script:
+    - sshpass -p $PASSWORD ssh $USER@$TARGET_SERVER 'sudo bash -s' < git_install.sh
 
 npm_yarn_install:
   tags:
@@ -50,11 +58,3 @@ nginx_install:
   when: manual
   script:
     - sshpass -p $PASSWORD ssh $USER@$TARGET_SERVER 'sudo bash -s' < nginx_install.sh
-
-git_install:
-  tags:
-    - default
-  stage: git
-  when: manual
-  script:
-    - sshpass -p $PASSWORD ssh $USER@$TARGET_SERVER 'sudo bash -s' < git_install.sh
