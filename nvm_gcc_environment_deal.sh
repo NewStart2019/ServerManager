@@ -63,6 +63,11 @@ if [ "$?" = 127 ]; then
   yum install -y wget
 fi
 
+unzip --version >> /dev/null
+if [ "$?" = 127 ]; then
+ yum install -y unzip
+fi
+
 # 加载用户环境变量
 NVM_PROFILE="$(nvm_detect_profile)"
 # shellcheck disable=SC1090
