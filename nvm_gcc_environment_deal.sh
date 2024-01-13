@@ -47,8 +47,11 @@ nvm_detect_profile() {
     nvm_echo "$DETECTED_PROFILE"
   fi
 }
+
 # 加载用户环境变量
-source nvm_detect_profile
+NVM_PROFILE="$(nvm_detect_profile)"
+# shellcheck disable=SC1090
+source ${NVM_PROFILE}
 
 if [ ! -e "${NVM_DIR}" ]; then
   echo -e "\e[31mNVM isn't already installed.\e[0m"
