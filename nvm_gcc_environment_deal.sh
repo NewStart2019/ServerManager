@@ -58,6 +58,11 @@ nvm_detect_profile() {
   fi
 }
 
+wget --version >> /dev/null
+if [ "$?" = 127 ]; then
+  yum install -y wget
+fi
+
 # 加载用户环境变量
 NVM_PROFILE="$(nvm_detect_profile)"
 # shellcheck disable=SC1090
