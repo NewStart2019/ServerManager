@@ -4,6 +4,16 @@
 #node: /lib64/libstdc++.so.6: version `CXXABI_1.3.9' not found (required by node)
 #node: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.20' not found (required by node)
 # nvm v18开始 最新版本的需要GLIBC_2.27支持，目前系统没有那么高的版本。 libstdc++
+nvm_echo() {
+  command printf %s\\n "$*" 2>/dev/null
+}
+
+nvm_try_profile() {
+  if [ -z "${1-}" ] || [ ! -f "${1}" ]; then
+    return 1
+  fi
+  nvm_echo "${1}"
+}
 
 #
 # Detect profile file if not specified as environment variable
