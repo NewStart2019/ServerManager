@@ -58,14 +58,14 @@ nvm_detect_profile() {
   fi
 }
 
-wget --version >> /dev/null
+wget --version >>/dev/null
 if [ "$?" = 127 ]; then
   yum install -y wget
 fi
 
-unzip --version >> /dev/null
+unzip -v >>/dev/null
 if [ "$?" = 127 ]; then
- yum install -y unzip
+  yum install -y unzip
 fi
 
 # 加载用户环境变量
@@ -87,89 +87,108 @@ else
 fi
 
 #################### 下载glibc 需要 make4
-make_version=$(make -v | grep -oP '(?<=GNU Make )(\d+\.\d+)')
-# 检查是否为空（即 make 是否安装）
-if [ -z "$make_version" ]; then
-  echo -e "\e[31mMake is not installed.Installing make\e[0m"
-  yum -y install make
-  make -v
-else
-  echo -e "\e[31mInstalled make version: $make_version\e[0m"
-  # 检查是否是 4.x 版本
-  if [[ "$make_version" == "4."* ]]; then
-    echo -e "\e[31mMake version 4.x is already installed.\e[0m"
-  else
-    echo -e "\e[31mInstalling make version 4.x...\e[0m"
-    # 升级make 4.x 的命令
-    cd || exit
-    wget http://ftp.gnu.org/gnu/make/make-4.3.tar.gz
-    tar -xzvf make-4.3.tar.gz && cd make-4.3/ || exit
-    ./configure --prefix=/usr/local/make
-    make && make install
-    cd /usr/bin/ && mv make make.bak
-    ln -sv /usr/local/make/bin/make /usr/bin/make
-    cd || exit
-    rm -rf make-4.3.tar.gz make-4.3
+make_upgrade() {
+  make_version=$(make -v | grep -oP '(?<=GNU Make )(\d+\.\d+)')
+  # 检查是否为空（即 make 是否安装）
+  if [ -z "$make_version" ]; then
+    echo -e "\e[31mMake is not installed.Installing make\e[0m"
+    yum -y install make
+    make -v
   fi
-fi
+  make_version=$(make -v | grep -oP '(?<=GNU Make )(\d+\.\d+)')
+  if [ "$make_version" != "4.3" ]; then
+    echo -e "\e[31mInstalled make version: $make_version\e[0m"
+    # 检查是否是 4.x 版本
+    if [[ "$make_version" == "4."* ]]; then
+      echo -e "\e[31mMake version 4.x is already installed.\e[0m"
+    else
+      echo -e "\e[31mInstalling make version 4.x...\e[0m"
+      # 升级make 4.x 的命令
+      cd || exit
+      #    wget http://ftp.gnu.org/gnu/make/make-4.3.tar.gz
+      wget http://172.16.0.97:84/make/make-4.3.tar.gz
+      tar -xzvf make-4.3.tar.gz && cd make-4.3/ || exit
+      ./configure --prefix=/usr/local/make
+      if [ "$?" = 127 ]; then
+        nvm_echo "make4安装 ../configure 失败"
+        exit 1
+      fi
+      make && make install
+      cd /usr/bin/ && mv -f make make.bak
+      ln -sv /usr/local/make/bin/make /usr/bin/make
+      cd || exit
+      rm -rf make-4.3.tar.gz make-4.3
+    fi
+  fi
+}
 
-####################  检查 gcc 的版本号 是否是8.3
-gcc_version=$(gcc --version | grep -oP '(?<=gcc \(GCC\) )(\d+\.\d+.\d+)')
-# 检查是否为空（即 gcc 是否安装）
-if [ -z "$gcc_version" ]; then
-  echo -e "\e[31mGCC is not installed.\e[0m"
-else
-  echo "Installed GCC version: $gcc_version"
-  # 检查是否是 4.x 版本
-  if [[ "$gcc_version" == "4."* ]]; then
-    echo "GCC version 4.x is already installed."
-  else
-    echo "Installing GCC version 4.x..."
-    # 升级GCC(默认为4 升级为8)
+####################  升级gcc 的版本到8
+gcc_upgrade() {
+  gcc_version=$(gcc --version | grep -oP '(?<=gcc \(GCC\) )(\d+\.\d+.\d+)')
+  # 检查是否为空（即 gcc 是否安装）
+  if [ -z "$gcc_version" ] || [ "$gcc_version" != "8.3.1" ]; then
+    echo -e "\e[31m正在升级gcc到8\e[0m"
     yum install -y centos-release-scl
     yum install -y devtoolset-8-gcc*
     mv /usr/bin/gcc /usr/bin/gcc-4.8.5
     ln -s /opt/rh/devtoolset-8/root/bin/gcc /usr/bin/gcc
     mv /usr/bin/g++ /usr/bin/g++-4.8.5
     ln -s /opt/rh/devtoolset-8/root/bin/g++ /usr/bin/g++
+  else
+    echo -e "\e[31mGCC version is greater 4.8.5.\e[0m"
   fi
-fi
+}
 
 # 安装 glibc
-glibc_version=$(ldd --version | grep "2.28")
-if [ -z "$glibc_version" ]; then
-  echo -e "\e[31mGlibc-2.28 is not installed.Installing glibc\e[0m"
-  cd || exit
-  wget http://ftp.gnu.org/gnu/glibc/glibc-2.28.tar.gz
-  tar xf glibc-2.28.tar.gz
-  cd glibc-2.28/ && mkdir build && cd build || exit
-  ../configure --prefix=/usr --disable-profile --enable-add-ons --with-headers=/usr/include --with-binutils=/usr/bin
-  make && make install
-  ldd --version
-  cd || exit
-  rm -rf glibc-2.28.tar.gz glibc-2.28
-  # 设置语言环境变量
-  sudo localedef -i zh_CN -f UTF-8 zh_CN.UTF-8
-  sudo mandb
-fi
-echo -e "\e[31mInstalled glibc-2.28\e[0m"
+glibc_upgrade() {
+  glibc_version=$(ldd --version | grep "2.28")
+  if [ -z "$glibc_version" ]; then
+    echo -e "\e[31mGlibc-2.28 is not installed.Installing glibc\e[0m"
+    cd || exit
+    #  wget http://ftp.gnu.org/gnu/glibc/glibc-2.28.tar.gz
+    wget http://172.16.0.97:84/glibc/glibc-2.28.tar.gz
+    tar xf glibc-2.28.tar.gz
+    cd glibc-2.28/ && mkdir build && cd build || exit
+    ../configure --prefix=/usr --disable-profile --enable-add-ons --with-headers=/usr/include --with-binutils=/usr/bin
+    if [ "$?" = 127 ]; then
+      nvm_echo "glibc-2.28 ../configure 失败"
+      exit 1
+    fi
+    make && make install
+    ldd --version
+    cd || exit
+    rm -rf glibc-2.28.tar.gz glibc-2.28
+    # 设置语言环境变量
+    sudo localedef -i zh_CN -f UTF-8 zh_CN.UTF-8
+    sudo mandb
+  fi
+  echo -e "\e[31mInstalled glibc-2.28\e[0m"
+}
 
 # 升级libstdc++
-# strings查看有没有GLIBCXX_3.4.20
-libstdc_version=$(strings /usr/lib64/libstdc++.so.6 | grep GLIBCXX_3.4.20)
-if [ -z "$libstdc_version" ]; then
-  cd || exit
-  sudo wget http://www.vuln.cn/wp-content/uploads/2019/08/libstdc.so_.6.0.26.zip
-  unzip libstdc.so_.6.0.26.zip
-  cp libstdc++.so.6.0.26 /lib64/
-  cd /lib64 || exit
+libstdc_upgrade() {
+  # strings查看有没有GLIBCXX_3.4.20
+  libstdc_version=$(ls -la /lib64/ | grep libstdc++.so.6.0.26)
+  if [ -z "$libstdc_version" ]; then
+    cd || exit
+    #  sudo wget http://www.vuln.cn/wp-content/uploads/2019/08/libstdc.so_.6.0.26.zip
+    sudo wget http://172.16.0.97:84/glibc/libstdc.so_.6.0.26.zip
+    unzip libstdc.so_.6.0.26.zip
+    cp libstdc++.so.6.0.26 /lib64/
+    cd /lib64 || exit
 
-  # 把原来的命令做备份
-  cp libstdc++.so.6 libstdc++.so.6.bak
-  # 重新链接
-  ln -s libstdc++.so.6.0.26 libstdc++.so.6
-  # 移除多余的文件
-  cd || exit
-  rm -rf libstdc.so_.6.0.26.zip libstdc++.so.6.0.26
-fi
-echo -e "\e[31mInstalled libstdc.so_.6.0.26!\e[0m"
+    # 把原来的命令做备份
+    cp libstdc++.so.6 libstdc++.so.6.bak
+    # 重新链接
+    ln -s libstdc++.so.6.0.26 libstdc++.so.6
+    # 移除多余的文件
+    cd || exit
+    rm -rf libstdc.so_.6.0.26.zip libstdc++.so.6.0.26
+  fi
+  echo -e "\e[31mInstalled libstdc.so_.6.0.26!\e[0m"
+}
+
+gcc_upgrade
+make_upgrade
+glibc_upgrade
+libstdc_upgrade
