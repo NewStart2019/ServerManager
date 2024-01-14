@@ -182,12 +182,12 @@ libstdc_upgrade() {
     fi
     cd /lib64 || exit
     # 备份文件不存在
-    if [[ ! -e "/lib64/libstdc++.so.6.bak" ]]]; then
+    if [[ ! -e "/lib64/libstdc++.so.6.bak" ]]; then
       # 把原来的命令做备份
       mv -f libstdc++.so.6 libstdc++.so.6.bak
     fi
     # 链接文件存在
-    if [[ -e "/lib64/libstdc++.so.6.0.26" ]]]; then
+    if [[ -e "/lib64/libstdc++.so.6.0.26" ]]; then
       rm -f libstdc++.so.6.0.26
     fi
     # 重新链接
