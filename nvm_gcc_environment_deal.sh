@@ -139,7 +139,7 @@ gcc_upgrade() {
   fi
 }
 
-# 安装 glibc
+# 安装 glibc-2.28
 glibc_upgrade() {
   glibc_version=$(ldd --version | grep "2.28")
   if [ -z "$glibc_version" ]; then
@@ -176,9 +176,8 @@ libstdc_upgrade() {
     unzip libstdc.so_.6.0.26.zip
     cp libstdc++.so.6.0.26 /lib64/
     cd /lib64 || exit
-
     # 把原来的命令做备份
-    cp libstdc++.so.6 libstdc++.so.6.bak
+    mv -f libstdc++.so.6 libstdc++.so.6.bak
     # 重新链接
     ln -s libstdc++.so.6.0.26 libstdc++.so.6
     # 移除多余的文件
