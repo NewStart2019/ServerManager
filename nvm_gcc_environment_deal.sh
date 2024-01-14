@@ -166,18 +166,30 @@ glibc_upgrade() {
 }
 
 # 升级libstdc++
+# 问题：node: /usr/lib64/libstdc++.so.6: version `GLIBCXX_3.4.20' not found (required by node)
+# 升级gcc时，生成的动态库没有替换老版本gcc的动态库。
 libstdc_upgrade() {
   # strings查看有没有GLIBCXX_3.4.20
-  libstdc_version=$(ls -la /lib64/ | grep libstdc++.so.6.0.26)
+  libstdc_version=$(strings /usr/lib64/libstdc++.so.6 | grep GLIBC | grep GLIBCXX_3.4.20)
   if [ -z "$libstdc_version" ]; then
     cd || exit
+    # 文件不存在则下载
+    if [[ ! -e "/lib64/libstdc++.so.6.0.26" ]]; then
     #  sudo wget http://www.vuln.cn/wp-content/uploads/2019/08/libstdc.so_.6.0.26.zip
-    sudo wget http://172.16.0.97:84/glibc/libstdc.so_.6.0.26.zip
-    unzip libstdc.so_.6.0.26.zip
-    cp libstdc++.so.6.0.26 /lib64/
+      sudo wget http://172.16.0.97:84/glibc/libstdc.so_.6.0.26.zip
+      unzip libstdc.so_.6.0.26.zip
+      cp libstdc++.so.6.0.26 /lib64/
+    fi
     cd /lib64 || exit
-    # 把原来的命令做备份
-    mv -f libstdc++.so.6 libstdc++.so.6.bak
+    # 备份文件不存在
+    if [[ ! -e "/lib64/libstdc++.so.6.bak" ]]]; then
+      # 把原来的命令做备份
+      mv -f libstdc++.so.6 libstdc++.so.6.bak
+    fi
+    # 链接文件存在
+    if [[ -e "/lib64/libstdc++.so.6.0.26" ]]]; then
+      rm -f libstdc++.so.6.0.26
+    fi
     # 重新链接
     ln -s libstdc++.so.6.0.26 libstdc++.so.6
     # 移除多余的文件
