@@ -187,8 +187,8 @@ libstdc_upgrade() {
       mv -f libstdc++.so.6 libstdc++.so.6.bak
     fi
     # 链接文件存在
-    if [[ -e "/lib64/libstdc++.so.6.0.26" ]]; then
-      rm -f libstdc++.so.6.0.26
+    if [[ -e "/lib64/libstdc++.so.6" ]]; then
+      rm -f libstdc++.so.6
     fi
     # 重新链接
     ln -s libstdc++.so.6.0.26 libstdc++.so.6
