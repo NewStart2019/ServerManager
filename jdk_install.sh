@@ -22,7 +22,7 @@ if [ "$?" = 127 ]; then
 fi
 
 # jdk17 或者 20 需要手动下载安装
-if [ "$JAVE_VERSION" = 17 ] || [ "$JAVE_VERSION" = 20 ]; then
+if [ "$JAVE_VERSION" = 17 ] || [ "$JAVE_VERSION" = 21 ]; then
   # 获取系统架构,安装指定架构版本的jdk
   arch="$(objdump="$(command -v objdump)" && objdump --file-headers "$objdump" | awk -F '[:,]+[[:space:]]+' '$1 == "architecture" { print $2 }')"
   if [ -z "$arch" ]; then
