@@ -49,6 +49,7 @@ docker_install:
   stage: docker
   when: manual
   script:
+    - sleep 10000
     - sshpass -p $PASSWORD ssh $USER@$TARGET_SERVER 'sudo bash -s' < docker_and_compose_install.sh
 
 nginx_install:
