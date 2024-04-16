@@ -2,8 +2,7 @@
 
 installDocker(){
   # 检查 Docker 是否已经安装
-  if ! command -v docker > /dev/null 2>&1
-  then
+  if ! command -v docker > /dev/null 2>&1; then
       echo "Docker 未安装"
       sudo yum install -y yum-utils device-mapper-persistent-data lvm2
       sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
@@ -21,7 +20,7 @@ installDocker(){
 installCompose() {
   start_time=$(date +%s) # 获取当前时间戳（秒）
   docker-compose -v
-  if [ "$?" -ne 127 ]; then
+  if command -v docker-compose > /dev/null 2>&1; then
     echo "已经安装过docker-compose"
     exit 0
   fi
