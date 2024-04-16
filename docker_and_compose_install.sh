@@ -48,7 +48,7 @@ writeConfig() {
   else
     echo "File $file already exists."
   fi
-  sudo systemctl start docker
+  sudo systemctl restart docker
   docker login -u admin -p s9AGdzFaSLXyQrD 172.16.0.197:8083
 }
 
