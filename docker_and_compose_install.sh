@@ -19,7 +19,6 @@ installDocker(){
 
 installCompose() {
   start_time=$(date +%s) # 获取当前时间戳（秒）
-  docker-compose -v
   if command -v /usr/local/bin/docker-compose > /dev/null 2>&1; then
     echo "已经安装过docker-compose"
     exit 0
