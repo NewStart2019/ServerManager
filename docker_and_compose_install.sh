@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# sudo yum install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+# sudo systemctl start docker
 installDocker(){
   # 检查 Docker 是否已经安装
   if ! command -v docker > /dev/null 2>&1; then
@@ -7,7 +9,7 @@ installDocker(){
       sudo yum install -y yum-utils device-mapper-persistent-data lvm2
       sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
       sudo yum makecache fast
-      sudo yum -y install docker-ce
+      sudo yum -y install docker-ce docker-ce-cli containerd.io
       sudo systemctl start docker
       echo "安装docker成功"
   else
@@ -17,6 +19,7 @@ installDocker(){
   docker -v
 }
 
+# 废弃这个函数
 installCompose() {
   start_time=$(date +%s) # 获取当前时间戳（秒）
   if command -v /usr/local/bin/docker-compose > /dev/null 2>&1; then
@@ -24,10 +27,7 @@ installCompose() {
     exit 0
   fi
 
-  yum install -y python3-pip #python3安装pip3!!!
-  pip3 install -U pip setuptools
-  pip3 install docker-compose --default-timeout=100
-
+  yum install -y docker-compose-plugin
   end_time=$(date +%s)                # 获取当前时间戳（秒）
   duration=$((end_time - start_time)) # 计算脚本执行时间（秒）
   echo "安装docke-composer成功,脚本执行时间：${duration} 秒"
