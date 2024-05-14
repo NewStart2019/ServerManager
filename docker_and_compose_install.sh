@@ -2,19 +2,19 @@
 
 # sudo yum install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 # sudo systemctl start docker
-installDocker(){
+installDocker() {
   # 检查 Docker 是否已经安装
-  if ! command -v docker > /dev/null 2>&1; then
-      echo "Docker 未安装"
-      sudo yum install -y yum-utils device-mapper-persistent-data lvm2
-      sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-      sudo yum makecache fast
-      sudo yum -y install docker-ce docker-ce-cli containerd.io
-      sudo systemctl start docker
-      echo "安装docker成功"
+  if ! command -v docker >/dev/null 2>&1; then
+    echo "Docker 未安装"
+    sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+    sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+    sudo yum makecache fast
+    sudo yum -y install docker-ce docker-ce-cli containerd.io
+    sudo systemctl start docker
+    echo "安装docker成功"
   else
-      echo "Docker 已安装"
-      sudo systemctl restart docker
+    echo "Docker 已安装"
+    sudo systemctl restart docker
   fi
   docker -v
 }
@@ -22,12 +22,14 @@ installDocker(){
 # 废弃这个函数
 installCompose() {
   start_time=$(date +%s) # 获取当前时间戳（秒）
-  if command -v /usr/local/bin/docker-compose > /dev/null 2>&1; then
+  if command -v /usr/local/bin/docker-compose >/dev/null 2>&1; then
     echo "已经安装过docker-compose"
     exit 0
   fi
 
   yum install -y docker-compose-plugin
+  mv /usr/local/bin/docker-compose /usr/local/bin/docker-compose.bak
+  ln -s /usr/libexec/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose
   end_time=$(date +%s)                # 获取当前时间戳（秒）
   duration=$((end_time - start_time)) # 计算脚本执行时间（秒）
   echo "安装docke-composer成功,脚本执行时间：${duration} 秒"
