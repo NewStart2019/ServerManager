@@ -13,6 +13,7 @@ variables:
 before_script:
   - echo "初始化服务器连接中……"
   # 添加了远程服务器的SSH密钥 （必须生成文件，否则无法访问远程主机）
+#  - ssh-keygen -t rsa -b 4096 -C "zjzx@qq.com" -f /root/.ssh/id_rsa -q -N ""
   - ssh-keyscan -t rsa $TARGET_SERVER >> /root/.ssh/known_hosts
 
 jdk_install:
