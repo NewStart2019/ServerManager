@@ -16,7 +16,7 @@ installDocker() {
     echo "Docker 已安装"
     sudo systemctl restart docker
   fi
-  docker -v
+  docker info
 }
 
 # 废弃这个函数
@@ -39,11 +39,21 @@ file="/etc/docker/daemon.json"
 writeConfig() {
   if [ ! -f "$file" ]; then
     echo '{
-        "log-driver":"json-file",
-        "log-opts": {"max-size":"500m", "max-file":"3"},
-        "insecure-registries": ["172.16.0.197:8083","172.16.0.197:8929"],
-        "registry-mirrors": ["http://172.16.0.197:8083/","http://172.16.0.197:8929/","https://registry.cn-hangzhou.aliyuncs.com/"]
-      }' | sudo tee "$file" >/dev/null
+  "data-root": "/data/docker",
+  "insecure-registries": ["172.16.0.197:8083","172.16.0.197:8929"],
+  "registry-mirrors": [
+    "https://docker.m.daocloud.io",
+    "http://172.16.0.197:8083/",
+    "http://172.16.0.197:8929/"
+  ],
+  "log-driver":"json-file",
+  "log-opts": {
+    "max-size": "500m",
+    "max-file": "3"
+  },
+  "storage-driver": "overlay2",
+  "exec-opts": ["native.cgroupdriver=systemd"]
+}' | sudo tee "$file" >/dev/null
     echo "File $file created and content written."
   else
     echo "File $file already exists."
